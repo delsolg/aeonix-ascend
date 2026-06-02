@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aeonix Ascend — Business Operations Coaching</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green: #1D9E75;
+      --green-light: #e8f7f2;
+      --green-dark: #0f6e56;
+      --ink: #0f1a14;
+      --ink-mid: #3a4a40;
+      --ink-soft: #6b7b70;
+      --cream: #f8f9f6;
+      --white: #ffffff;
+      --border: #dde8e2;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 4rem;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--ink);
+      letter-spacing: -0.3px;
+    }
+    .logo span { color: var(--green); }
+    .nav-tag {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    /* HERO */
+    .hero {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 1.5rem;
+      border: 1px solid #b2ddd0;
+    }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(36px, 5vw, 56px);
+      line-height: 1.15;
+      color: var(--ink);
+      letter-spacing: -1px;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--green);
+    }
+    .hero p {
+      font-size: 17px;
+      color: var(--ink-mid);
+      max-width: 580px;
+      margin: 0 auto 2.5rem;
+      font-weight: 300;
+      line-height: 1.75;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--green);
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 13px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      letter-spacing: 0.2px;
+    }
+
+    /* DIVIDER */
+    .divider {
+      width: 48px;
+      height: 2px;
+      background: var(--green);
+      margin: 0 auto 3rem;
+    }
+
+    /* HOW IT WORKS */
+    .section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.75rem;
+    }
+    .section h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+      margin-bottom: 2.5rem;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .step {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+    }
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .step h3 {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .step p {
+      font-size: 13px;
+      color: var(--ink-soft);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    /* SMS EXAMPLE */
+    .sms-section {
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 4rem 2rem;
+    }
+    .sms-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .sms-copy .section-label { margin-bottom: 0.75rem; }
+    .sms-copy h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 30px;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+      margin-bottom: 1rem;
+      line-height: 1.25;
+    }
+    .sms-copy p {
+      font-size: 14px;
+      color: var(--ink-mid);
+      font-weight: 300;
+      line-height: 1.75;
+    }
+    .sms-preview {
+      background: #f0f2f5;
+      border-radius: 24px;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sms-header {
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 4px;
+    }
+    .sms-bubble {
+      max-width: 80%;
+      padding: 9px 13px;
+      border-radius: 16px;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .sms-in {
+      background: white;
+      color: var(--ink);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      border: 1px solid #e5e5e5;
+    }
+    .sms-out {
+      background: var(--green);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    /* USE CASES */
+    .use-cases {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 0;
+    }
+    .use-case {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .use-case-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .use-case h4 {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+    .use-case p {
+      font-size: 12px;
+      color: var(--ink-soft);
+      font-weight: 300;
+    }
+
+    /* BUSINESS INFO */
+    .biz-section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    .biz-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    .biz-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+    }
+    .biz-card .label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 4px;
+    }
+    .biz-card .value {
+      font-size: 14px;
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--ink);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 2rem;
+      font-size: 12px;
+      margin-top: 3rem;
+    }
+    footer strong { color: white; }
+
+    @media (max-width: 640px) {
+      nav { padding: 1rem 1.5rem; }
+      .steps { grid-template-columns: 1fr; }
+      .sms-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .use-cases { grid-template-columns: 1fr; }
+      .biz-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Aeonix<span> Ascend</span></div>
+  <div class="nav-tag">Business Operations Coaching</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">AI-Powered · SMS-Based · Always On</div>
+  <h1>Your business coach,<br/>delivered <em>right to your phone.</em></h1>
+  <p>Aeonix Ascend is an AI-powered business operations coach that checks in with small business owners daily via SMS — helping them stay accountable, focused, and moving forward at every stage of their journey.</p>
+  <a href="mailto:brian@aeonixascend.com" class="hero-cta">Get Early Access</a>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="section-label">How It Works</div>
+  <h2>Coaching that fits your day</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>You set your goal</h3>
+      <p>Text Aeonix Ascend what you're working on this week — customers, launches, operations, or growth.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Daily check-ins</h3>
+      <p>Aeonix texts you every morning with a focused question to keep you on track and accountable to your goals.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Real-time coaching</h3>
+      <p>Hit a wall? Text back. Aeonix responds instantly with practical next steps — no app needed, no scheduling.</p>
+    </div>
+  </div>
+</div>
+
+<div class="sms-section">
+  <div class="sms-inner">
+    <div class="sms-copy">
+      <div class="section-label">Message Types</div>
+      <h2>What Aeonix Ascend sends your clients</h2>
+      <p>All messages are transactional and coaching-focused. Users opt in at signup and can stop at any time by replying STOP. No marketing. No promotions. Pure operational coaching.</p>
+      <br/>
+      <div class="use-cases">
+        <div class="use-case">
+          <div class="use-case-dot"></div>
+          <div>
+            <h4>Daily check-ins</h4>
+            <p>Morning accountability prompts tied to the user's stated weekly goal</p>
+          </div>
+        </div>
+        <div class="use-case">
+          <div class="use-case-dot"></div>
+          <div>
+            <h4>Goal reminders</h4>
+            <p>Follow-up messages when a commitment deadline is approaching</p>
+          </div>
+        </div>
+        <div class="use-case">
+          <div class="use-case-dot"></div>
+          <div>
+            <h4>Coaching responses</h4>
+            <p>Real-time replies when users text in with blockers or updates</p>
+          </div>
+        </div>
+        <div class="use-case">
+          <div class="use-case-dot"></div>
+          <div>
+            <h4>Weekly summaries</h4>
+            <p>Sunday recap of the week's progress and next week's focus area</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sms-preview">
+        <div class="sms-header">Aeonix Ascend · Today 8:01 AM</div>
+        <div class="sms-bubble sms-in">Good morning! You said your goal this week is getting your first 5 customers. How many outreach messages have you sent so far?</div>
+        <div class="sms-bubble sms-out">Honestly none yet 😬</div>
+        <div class="sms-bubble sms-in">No stress — let's fix that now. Send 3 messages before noon today. Can you commit to that?</div>
+        <div class="sms-bubble sms-out">Yes I'm on it</div>
+        <div class="sms-bubble sms-in">✅ That's what I need. I'll check back at noon. Go get it — 3 messages, that's all.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="biz-section">
+  <div class="section-label">Business Information</div>
+  <h2 style="font-family:'DM Serif Display',serif;font-size:28px;letter-spacing:-0.5px;margin-bottom:1.5rem;">Company Details</h2>
+  <div class="biz-grid">
+    <div class="biz-card">
+      <div class="label">Business Name</div>
+      <div class="value">Aeonix Ascend</div>
+    </div>
+    <div class="biz-card">
+      <div class="label">Business Type</div>
+      <div class="value">Sole Proprietorship / Startup</div>
+    </div>
+    <div class="biz-card">
+      <div class="label">Industry</div>
+      <div class="value">Business Coaching & AI Software</div>
+    </div>
+    <div class="biz-card">
+      <div class="label">Message Category</div>
+      <div class="value">Transactional — Coaching & Notifications</div>
+    </div>
+    <div class="biz-card">
+      <div class="label">Owner</div>
+      <div class="value">Brian De Los Santos</div>
+    </div>
+    <div class="biz-card">
+      <div class="label">Location</div>
+      <div class="value">Houston, Texas, USA</div>
+    </div>
+    <div class="biz-card">
+      <div class="label">Contact Email</div>
+      <div class="value">brian@aeonixascend.com</div>
+    </div>
+    <div class="biz-card">
+      <div class="label">Opt-Out Method</div>
+      <div class="value">Reply STOP to any message</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong>Aeonix Ascend</strong> · Your Business Operations Coach · Houston, Texas · &copy; 2026
+</footer>
+
+</body>
+</html>
