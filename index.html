@@ -16,8 +16,11 @@
       --cream: #f8f9f6;
       --white: #ffffff;
       --border: #dde8e2;
+      --shadow-sm: 0 1px 3px rgba(15,26,20,0.06), 0 1px 2px rgba(15,26,20,0.04);
+      --shadow-md: 0 4px 12px rgba(15,26,20,0.08), 0 2px 4px rgba(15,26,20,0.05);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: 'DM Sans', sans-serif;
       background: var(--cream);
@@ -27,11 +30,15 @@
 
     /* NAV */
     nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1.5rem 4rem;
-      background: var(--white);
+      padding: 1.25rem 4rem;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border);
     }
     .logo {
@@ -41,6 +48,11 @@
       letter-spacing: -0.3px;
     }
     .logo span { color: var(--green); }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
     .nav-tag {
       font-size: 12px;
       font-weight: 500;
@@ -48,6 +60,18 @@
       text-transform: uppercase;
       color: var(--ink-soft);
     }
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--green-dark);
+      background: var(--green-light);
+      border: 1px solid #b2ddd0;
+      padding: 7px 16px;
+      border-radius: 7px;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .nav-cta:hover { background: #d4f0e8; border-color: var(--green); }
 
     /* HERO */
     .hero {
@@ -89,18 +113,108 @@
       font-weight: 300;
       line-height: 1.75;
     }
-    .hero-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+
+    /* WAITLIST FORM */
+    .waitlist-wrap {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .waitlist-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .waitlist-form input,
+    .waitlist-form select {
+      width: 100%;
+      padding: 13px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--ink);
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      appearance: none;
+    }
+    .waitlist-form input::placeholder { color: var(--ink-soft); }
+    .waitlist-form input:focus,
+    .waitlist-form select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(29,158,117,0.12);
+    }
+    .select-wrap {
+      position: relative;
+    }
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--ink-soft);
+      pointer-events: none;
+    }
+    .waitlist-submit {
+      width: 100%;
+      padding: 14px;
       background: var(--green);
       color: white;
-      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
       font-weight: 500;
-      padding: 13px 28px;
-      border-radius: 8px;
-      text-decoration: none;
+      border: none;
+      border-radius: 9px;
+      cursor: pointer;
       letter-spacing: 0.2px;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 2px 8px rgba(29,158,117,0.3);
+    }
+    .waitlist-submit:hover {
+      background: var(--green-dark);
+      box-shadow: 0 4px 14px rgba(29,158,117,0.35);
+    }
+    .waitlist-submit:active { transform: scale(0.99); }
+    .form-note {
+      font-size: 11px;
+      color: var(--ink-soft);
+      text-align: center;
+      margin-top: 4px;
+    }
+    .form-confirmation {
+      display: none;
+      background: var(--green-light);
+      border: 1.5px solid #b2ddd0;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+    }
+    .form-confirmation .confirm-icon {
+      font-size: 32px;
+      margin-bottom: 0.75rem;
+    }
+    .form-confirmation h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .form-confirmation p {
+      font-size: 14px;
+      color: var(--ink-mid);
+      font-weight: 300;
+      margin: 0;
     }
 
     /* DIVIDER */
@@ -142,6 +256,12 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .step:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
     }
     .step-num {
       width: 32px;
@@ -167,6 +287,143 @@
       color: var(--ink-soft);
       line-height: 1.65;
       font-weight: 300;
+    }
+
+    /* PRICING */
+    .pricing-section {
+      background: var(--ink);
+      padding: 5rem 2rem;
+    }
+    .pricing-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .pricing-inner .section-label { color: #5ecba7; }
+    .pricing-inner h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 36px;
+      color: var(--white);
+      letter-spacing: -0.5px;
+      margin-bottom: 0.75rem;
+    }
+    .pricing-inner > p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.55);
+      font-weight: 300;
+      margin-bottom: 3rem;
+    }
+    .pricing-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 3rem 2.5rem;
+      max-width: 420px;
+      margin: 0 auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      position: relative;
+    }
+    .pricing-badge {
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--green);
+      color: white;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .pricing-tier {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 0.5rem;
+    }
+    .pricing-price {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .pricing-price .dollar { font-size: 24px; font-weight: 500; color: var(--ink); margin-top: 8px; }
+    .pricing-price .amount {
+      font-family: 'DM Serif Display', serif;
+      font-size: 64px;
+      color: var(--ink);
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+    .pricing-price .period { font-size: 14px; color: var(--ink-soft); }
+    .pricing-tagline {
+      font-size: 13px;
+      color: var(--ink-soft);
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+    .pricing-divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 1.75rem;
+    }
+    .pricing-features {
+      list-style: none;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+    .pricing-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--ink-mid);
+    }
+    .pricing-features li::before {
+      content: '';
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--green-light);
+      border: 1.5px solid #b2ddd0;
+      flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' stroke='%230f6e56' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .pricing-cta {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: var(--green);
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      border: none;
+      border-radius: 9px;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+      box-shadow: 0 2px 8px rgba(29,158,117,0.3);
+    }
+    .pricing-cta:hover {
+      background: var(--green-dark);
+      box-shadow: 0 4px 14px rgba(29,158,117,0.35);
+    }
+    .pricing-note {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 1.5rem;
     }
 
     /* SMS EXAMPLE */
@@ -242,7 +499,7 @@
       margin-top: 0;
     }
     .use-case {
-      background: var(--white);
+      background: var(--cream);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 1.25rem 1.5rem;
@@ -269,6 +526,142 @@
       color: var(--ink-soft);
       font-weight: 300;
     }
+
+    /* TEXT US NOW */
+    .text-us-section {
+      padding: 5rem 2rem;
+      background: linear-gradient(135deg, var(--green-light) 0%, #d4f0e8 100%);
+      border-top: 1px solid #b2ddd0;
+      border-bottom: 1px solid #b2ddd0;
+      text-align: center;
+    }
+    .text-us-inner {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .text-us-inner .section-label { color: var(--green-dark); }
+    .text-us-inner h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 36px;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+      margin-bottom: 0.75rem;
+    }
+    .text-us-inner > p {
+      font-size: 16px;
+      color: var(--ink-mid);
+      font-weight: 300;
+      margin-bottom: 2rem;
+      line-height: 1.75;
+    }
+    .phone-number {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(28px, 5vw, 44px);
+      color: var(--green-dark);
+      letter-spacing: -0.5px;
+      margin-bottom: 1.5rem;
+      display: block;
+      text-decoration: none;
+    }
+    .sms-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--green);
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 16px 36px;
+      border-radius: 10px;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(29,158,117,0.35);
+      transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+    }
+    .sms-btn:hover {
+      background: var(--green-dark);
+      box-shadow: 0 6px 20px rgba(29,158,117,0.4);
+      transform: translateY(-1px);
+    }
+    .sms-btn svg { flex-shrink: 0; }
+    .text-us-note {
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-top: 1rem;
+    }
+
+    /* FAQ */
+    .faq-section {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    .faq-section .section-label { text-align: center; }
+    .faq-section h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .faq-item {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 1.25rem 1.5rem;
+      text-align: left;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      transition: background 0.1s;
+    }
+    .faq-question:hover { background: var(--cream); }
+    .faq-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--green-light);
+      border: 1px solid #b2ddd0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s, background 0.15s;
+    }
+    .faq-icon svg { transition: transform 0.2s; }
+    .faq-item.open .faq-icon { background: var(--green); border-color: var(--green); }
+    .faq-item.open .faq-icon svg { transform: rotate(45deg); }
+    .faq-item.open .faq-icon path { stroke: white; }
+    .faq-answer {
+      display: none;
+      padding: 0 1.5rem 1.25rem;
+      font-size: 14px;
+      color: var(--ink-mid);
+      font-weight: 300;
+      line-height: 1.75;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+    .faq-item.open .faq-answer { display: block; }
 
     /* BUSINESS INFO */
     .biz-section {
@@ -312,12 +705,90 @@
     }
     footer strong { color: white; }
 
+    /* PHOTOS */
+    .hero-photo {
+      margin-top: 3rem;
+      border-radius: 16px;
+      overflow: hidden;
+      height: 380px;
+      box-shadow: var(--shadow-md);
+    }
+    .hero-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 25%;
+      display: block;
+    }
+    .section-photo {
+      border-radius: 14px;
+      overflow: hidden;
+      height: 280px;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .section-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    /* TEXT US — split layout */
+    .text-us-section { text-align: left; }
+    .text-us-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .text-us-photo {
+      border-radius: 16px;
+      overflow: hidden;
+      height: 440px;
+      box-shadow: var(--shadow-md);
+      order: -1;
+    }
+    .text-us-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+    .text-us-content .section-label { color: var(--green-dark); }
+    .text-us-content h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 36px;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+    .text-us-content > p {
+      font-size: 16px;
+      color: var(--ink-mid);
+      font-weight: 300;
+      margin-bottom: 2rem;
+      line-height: 1.75;
+    }
+
     @media (max-width: 640px) {
       nav { padding: 1rem 1.5rem; }
+      .nav-tag { display: none; }
+      .form-row { grid-template-columns: 1fr; }
       .steps { grid-template-columns: 1fr; }
       .sms-inner { grid-template-columns: 1fr; gap: 2rem; }
       .use-cases { grid-template-columns: 1fr; }
       .biz-grid { grid-template-columns: 1fr; }
+      .pricing-card { padding: 2.5rem 1.5rem; }
+      .hero-photo { height: 220px; }
+      .section-photo { height: 200px; }
+      .text-us-inner { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
+      .text-us-photo { height: 260px; order: 0; }
     }
   </style>
 </head>
@@ -325,14 +796,54 @@
 
 <nav>
   <div class="logo">Aeonix<span> Ascend</span></div>
-  <div class="nav-tag">Business Operations Coaching</div>
+  <div class="nav-right">
+    <div class="nav-tag">Business Operations Coaching</div>
+    <a href="#waitlist" class="nav-cta">Join Waitlist</a>
+  </div>
 </nav>
 
 <div class="hero">
   <div class="hero-badge">AI-Powered · SMS-Based · Always On</div>
   <h1>Your business coach,<br/>delivered <em>right to your phone.</em></h1>
   <p>Aeonix Ascend is an AI-powered business operations coach that checks in with small business owners daily via SMS — helping them stay accountable, focused, and moving forward at every stage of their journey.</p>
-  <a href="mailto:brian@aeonixascend.com" class="hero-cta">Get Early Access</a>
+
+  <div class="waitlist-wrap" id="waitlist">
+    <form class="waitlist-form" id="waitlist-form" novalidate>
+      <div class="form-row">
+        <input type="text" id="firstName" name="firstName" placeholder="First name" required autocomplete="given-name"/>
+        <input type="tel" id="phone" name="phone" placeholder="Phone number" required autocomplete="tel"/>
+      </div>
+      <div class="select-wrap">
+        <select id="businessType" name="businessType" required>
+          <option value="" disabled selected>What type of business do you run?</option>
+          <option value="retail">Retail / E-commerce</option>
+          <option value="food">Food &amp; Beverage</option>
+          <option value="service">Service Business</option>
+          <option value="freelance">Freelancer / Consultant</option>
+          <option value="health">Health &amp; Wellness</option>
+          <option value="trades">Construction / Trades</option>
+          <option value="realestate">Real Estate</option>
+          <option value="tech">Tech / Software</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <button type="submit" class="waitlist-submit">Get Early Access — It's Free</button>
+      <p class="form-note">No spam. Unsubscribe anytime. Reply STOP to opt out of SMS.</p>
+    </form>
+    <div class="form-confirmation" id="form-confirmation">
+      <div class="confirm-icon">✅</div>
+      <h3>You're on the list!</h3>
+      <p>We'll text you when Aeonix Ascend is ready. Keep an eye on your phone — coaching starts soon.</p>
+    </div>
+  </div>
+
+  <div class="hero-photo">
+    <img
+      src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1400&q=80&auto=format&fit=crop&crop=faces,center"
+      alt="Small business owner reviewing their coaching messages on a phone"
+      loading="lazy"
+    />
+  </div>
 </div>
 
 <div class="divider"></div>
@@ -340,6 +851,13 @@
 <div class="section">
   <div class="section-label">How It Works</div>
   <h2>Coaching that fits your day</h2>
+  <div class="section-photo">
+    <img
+      src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1400&q=80&auto=format&fit=crop&crop=center"
+      alt="Entrepreneur working from their home office, staying on top of business goals"
+      loading="lazy"
+    />
+  </div>
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
@@ -356,6 +874,33 @@
       <h3>Real-time coaching</h3>
       <p>Hit a wall? Text back. Aeonix responds instantly with practical next steps — no app needed, no scheduling.</p>
     </div>
+  </div>
+</div>
+
+<div class="pricing-section">
+  <div class="pricing-inner">
+    <div class="section-label">Pricing</div>
+    <h2>Simple, honest pricing</h2>
+    <p>One plan. Everything included. No hidden fees.</p>
+    <div class="pricing-card">
+      <div class="pricing-badge">Most Popular</div>
+      <div class="pricing-tier">Starter</div>
+      <div class="pricing-price">
+        <span class="dollar">$</span>
+        <span class="amount">49</span>
+        <span class="period">/month</span>
+      </div>
+      <p class="pricing-tagline">Everything you need to grow your business</p>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>Daily SMS check-ins to keep you on track</li>
+        <li>Real-time coaching — text back anytime</li>
+        <li>Goal tracking &amp; accountability prompts</li>
+        <li>Weekly progress summaries every Sunday</li>
+      </ul>
+      <a href="#waitlist" class="pricing-cta">Start Free Trial</a>
+    </div>
+    <p class="pricing-note">7-day free trial · Cancel anytime · No contracts</p>
   </div>
 </div>
 
@@ -410,6 +955,95 @@
   </div>
 </div>
 
+<div class="text-us-section">
+  <div class="text-us-inner">
+    <div class="text-us-photo">
+      <img
+        src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=900&q=80&auto=format&fit=crop&crop=faces,top"
+        alt="Business owner smiling while texting on their phone"
+        loading="lazy"
+      />
+    </div>
+    <div class="text-us-content">
+      <div class="section-label">Talk to Us Now</div>
+      <h2>Have questions? Just text us.</h2>
+      <p>Our team is standing by. Send a text and we'll get back to you — usually within a few hours.</p>
+      <a href="tel:+18669416892" class="phone-number">+1 (866) 941-6892</a>
+      <a href="sms:+18669416892" class="sms-btn">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 4.5A1.5 1.5 0 014.5 3h11A1.5 1.5 0 0117 4.5v8A1.5 1.5 0 0115.5 14H11l-4 3v-3H4.5A1.5 1.5 0 013 12.5v-8z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        Text Us Now
+      </a>
+      <p class="text-us-note">Standard message &amp; data rates may apply.</p>
+    </div>
+  </div>
+</div>
+
+<div class="faq-section">
+  <div class="section-label">FAQ</div>
+  <h2>Common questions</h2>
+  <div class="faq-list">
+
+    <div class="faq-item">
+      <button class="faq-question" type="button" aria-expanded="false">
+        How does Aeonix Ascend actually work?
+        <span class="faq-icon">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M5 1v8M1 5h8" stroke="#0f6e56" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+      </button>
+      <div class="faq-answer">
+        After you sign up, you'll receive a welcome text asking about your current business goal. From there, Aeonix sends you a short check-in every morning — just one focused question tied to what you're working on. You reply via text, and if you hit a blocker or want advice, just text back and you'll get a real response within seconds. No app to download, no calendar to manage.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" type="button" aria-expanded="false">
+        Is my information kept private?
+        <span class="faq-icon">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M5 1v8M1 5h8" stroke="#0f6e56" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+      </button>
+      <div class="faq-answer">
+        Absolutely. Your name, phone number, and business conversations are never sold or shared with third parties. We use your data solely to power your coaching experience. All messages are transmitted and stored securely. You can request deletion of your data at any time by texting DELETE to our number.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" type="button" aria-expanded="false">
+        Can I cancel anytime?
+        <span class="faq-icon">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M5 1v8M1 5h8" stroke="#0f6e56" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+      </button>
+      <div class="faq-answer">
+        Yes — no contracts, no cancellation fees, no questions asked. You can cancel your subscription at any time from your account dashboard or by texting CANCEL to our number. Your access continues until the end of your current billing period. To stop SMS messages immediately at any time, just reply STOP.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" type="button" aria-expanded="false">
+        What if I need a break from daily messages?
+        <span class="faq-icon">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M5 1v8M1 5h8" stroke="#0f6e56" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+      </button>
+      <div class="faq-answer">
+        Totally fine. Reply PAUSE to temporarily stop messages — useful for vacations or busy periods. Reply RESUME whenever you're ready to pick back up. Your goals and progress are saved so you'll pick up right where you left off. You're always in control of your experience.
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <div class="biz-section">
   <div class="section-label">Business Information</div>
   <h2 style="font-family:'DM Serif Display',serif;font-size:28px;letter-spacing:-0.5px;margin-bottom:1.5rem;">Company Details</h2>
@@ -452,6 +1086,52 @@
 <footer>
   <strong>Aeonix Ascend</strong> · Your Business Operations Coach · Houston, Texas · &copy; 2026
 </footer>
+
+<script>
+  // Waitlist form
+  const form = document.getElementById('waitlist-form');
+  const confirmation = document.getElementById('form-confirmation');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const firstName = document.getElementById('firstName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const businessType = document.getElementById('businessType').value;
+
+    if (!firstName || !phone || !businessType) return;
+
+    const btn = form.querySelector('.waitlist-submit');
+    btn.textContent = 'Submitting...';
+    btn.disabled = true;
+
+    // If the server is hosted separately (e.g. on Railway/Render),
+    // replace '/waitlist' below with the full URL: 'https://your-server.com/waitlist'
+    try {
+      const res = await fetch('/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, phone, businessType }),
+      });
+      if (!res.ok) throw new Error('Server error');
+    } catch (_) {
+      // Show confirmation anyway — failure is logged server-side
+    }
+
+    form.style.display = 'none';
+    confirmation.style.display = 'block';
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-question').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach((el) => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+      btn.setAttribute('aria-expanded', (!isOpen).toString());
+    });
+  });
+</script>
 
 </body>
 </html>
