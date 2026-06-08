@@ -136,23 +136,21 @@ async function logToAirtable(phone, message, response) {
 // ---------------------------------------------------------------------------
 // Airtable — save waitlist user
 //
-// Requires a "Users" table in your Airtable base with these fields:
-//   FirstName    (Single line text)
-//   Phone        (Single line text)
-//   BusinessType (Single line text)
-//   SignupDate   (Single line text)
-//   Status       (Single line text)  default: "waitlist"
+// Users table fields (as confirmed):
+//   Name          (Single line text) — primary field
+//   Phone         (Single line text)
+//   Business Type (Single line text)
+//   SignupDate    (Date)
 // ---------------------------------------------------------------------------
 
 async function saveUserToAirtable(firstName, phone, businessType) {
   const payload = {
     records: [{
       fields: {
-        FirstName:    firstName,
-        Phone:        phone,
-        BusinessType: businessType,
-        SignupDate:   new Date().toISOString(),
-        Status:       'waitlist',
+        Name:            firstName,
+        Phone:           phone,
+        'Business Type': businessType,
+        SignupDate:      new Date().toISOString().split('T')[0],
       },
     }],
   };

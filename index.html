@@ -1104,10 +1104,10 @@
     btn.textContent = 'Submitting...';
     btn.disabled = true;
 
-    // If the server is hosted separately (e.g. on Railway/Render),
-    // replace '/waitlist' below with the full URL: 'https://your-server.com/waitlist'
+    // Points to the Express server. Update SERVER_URL when deploying to Railway/Render.
+    const SERVER_URL = 'https://capacity-reemerge-quail.ngrok-free.dev';
     try {
-      const res = await fetch('/waitlist', {
+      const res = await fetch(SERVER_URL + '/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName, phone, businessType }),
