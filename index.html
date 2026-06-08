@@ -667,31 +667,14 @@
     .biz-section {
       max-width: 860px;
       margin: 0 auto;
-      padding: 3rem 2rem;
+      padding: 1.5rem 2rem 0.5rem;
+      border-top: 1px solid var(--border);
     }
-    .biz-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-    }
-    .biz-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.25rem 1.5rem;
-    }
-    .biz-card .label {
+    .biz-fine-print {
       font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
       color: var(--ink-soft);
-      margin-bottom: 4px;
-    }
-    .biz-card .value {
-      font-size: 14px;
-      color: var(--ink);
-      font-weight: 400;
+      line-height: 1.8;
+      opacity: 0.6;
     }
 
     /* FOOTER */
@@ -1045,42 +1028,11 @@
 </div>
 
 <div class="biz-section">
-  <div class="section-label">Business Information</div>
-  <h2 style="font-family:'DM Serif Display',serif;font-size:28px;letter-spacing:-0.5px;margin-bottom:1.5rem;">Company Details</h2>
-  <div class="biz-grid">
-    <div class="biz-card">
-      <div class="label">Business Name</div>
-      <div class="value">Aeonix Ascend</div>
-    </div>
-    <div class="biz-card">
-      <div class="label">Business Type</div>
-      <div class="value">Sole Proprietorship / Startup</div>
-    </div>
-    <div class="biz-card">
-      <div class="label">Industry</div>
-      <div class="value">Business Coaching & AI Software</div>
-    </div>
-    <div class="biz-card">
-      <div class="label">Message Category</div>
-      <div class="value">Transactional — Coaching & Notifications</div>
-    </div>
-    <div class="biz-card">
-      <div class="label">Owner</div>
-      <div class="value">Brian De Los Santos</div>
-    </div>
-    <div class="biz-card">
-      <div class="label">Location</div>
-      <div class="value">Houston, Texas, USA</div>
-    </div>
-    <div class="biz-card">
-      <div class="label">Contact Email</div>
-      <div class="value">brian@aeonixascend.com</div>
-    </div>
-    <div class="biz-card">
-      <div class="label">Opt-Out Method</div>
-      <div class="value">Reply STOP to any message</div>
-    </div>
-  </div>
+  <p class="biz-fine-print">
+    Aeonix Ascend · Sole Proprietorship · Business Coaching &amp; AI Software · Houston, Texas, USA ·
+    Owner: Brian De Los Santos · <a href="mailto:brian@aeonixascend.com" style="color:inherit;">brian@aeonixascend.com</a> ·
+    Messages are transactional coaching &amp; notifications · Reply STOP to opt out at any time
+  </p>
 </div>
 
 <footer>
