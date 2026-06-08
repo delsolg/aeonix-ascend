@@ -41,6 +41,40 @@ async function getAeonResponse(userMessage) {
   return text;
 }
 
+async function logToAirtable(phone, message, response) {
+  const url = `https://api.airtable.com/v0/appPxAUdkGx9NY5a8/Conversations`;
+
+  const payload = {
+    records: [
+      {
+        fields: {
+          Phone: phone,
+          Message: message,
+          Response: response,
+          Timestamp: new Date().toISOString(),
+          UserID: phone,
+        },
+      },
+    ],
+  };
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(`Airtable API error ${res.status}: ${JSON.stringify(err)}`);
+  }
+
+  console.log(`[Airtable] Conversation logged for ${phone}`);
+}
+
 async function sendSms(to, body) {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -86,6 +120,9 @@ app.post('/sms', async (req, res) => {
   try {
     const aeonReply = await getAeonResponse(body);
     await sendSms(from, aeonReply);
+    logToAirtable(from, body, aeonReply).catch((err) =>
+      console.error(`[Airtable] Logging failed for ${from}:`, err.message)
+    );
   } catch (err) {
     console.error(`[Error] Failed to process message from ${from}:`, err.message);
   }
