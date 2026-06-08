@@ -114,7 +114,7 @@ async function logToAirtable(phone, message, response) {
         Phone:     phone,
         Message:   message,
         Response:  response,
-        Timestamp: new Date().toISOString(),
+        Timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }),
         UserID:    phone,
       },
     }],
@@ -150,7 +150,7 @@ async function saveUserToAirtable(firstName, phone, businessType) {
         Name:            firstName,
         Phone:           phone,
         'Business Type': businessType,
-        SignupDate:      new Date().toISOString().split('T')[0],
+        SignupDate:      new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' }),
       },
     }],
   };
