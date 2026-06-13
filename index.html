@@ -36,7 +36,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1.25rem 4rem;
+      padding: 0.35rem 4rem;
       background: rgba(255,255,255,0.95);
       backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border);
@@ -675,6 +675,45 @@
       opacity: 0.6;
     }
 
+    /* FINAL CTA */
+    .final-cta {
+      background: var(--green-dark);
+      padding: 4.5rem 2rem;
+      text-align: center;
+    }
+    .final-cta-inner {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .final-cta-inner h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(28px, 4vw, 38px);
+      color: var(--white);
+      letter-spacing: -0.5px;
+      margin-bottom: 0.75rem;
+    }
+    .final-cta-inner p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.7);
+      font-weight: 300;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+    .final-cta-btn {
+      display: inline-block;
+      padding: 15px 40px;
+      background: var(--white);
+      color: var(--green-dark);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      border-radius: 9px;
+      text-decoration: none;
+      transition: background 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .final-cta-btn:hover { background: var(--green-light); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+
     /* FOOTER */
     footer {
       background: var(--ink);
@@ -758,7 +797,8 @@
     }
 
     @media (max-width: 640px) {
-      nav { padding: 1rem 1.5rem; }
+      nav { padding: 0.35rem 1.5rem; }
+      .logo img { height: 64px; }
       .nav-tag { display: none; }
       .form-row { grid-template-columns: 1fr; }
       .steps { grid-template-columns: 1fr; }
@@ -865,7 +905,7 @@
     <h2>Simple, honest pricing</h2>
     <p>One plan. Everything included. No hidden fees.</p>
     <div class="pricing-card">
-      <div class="pricing-badge">Most Popular</div>
+      <div class="pricing-badge">7-Day Free Trial</div>
       <div class="pricing-tier">Starter</div>
       <div class="pricing-price">
         <span class="dollar">$</span>
@@ -890,9 +930,8 @@
   <div class="sms-inner">
     <div class="sms-copy">
       <div class="section-label">Message Types</div>
-      <h2>What Aeonix Ascend sends your clients</h2>
-      <p>All messages are transactional and coaching-focused. Users opt in at signup and can stop at any time by replying STOP. No marketing. No promotions. Pure operational coaching.</p>
-      <br/>
+      <h2>What your daily coaching looks like</h2>
+      <p>Every message is built around your specific goals — not generic advice. Short, sharp, and tied to exactly what you told us you're working on. No app to download, no calendar to manage, no fluff.</p>
       <div class="use-cases">
         <div class="use-case">
           <div class="use-case-dot"></div>
@@ -947,9 +986,9 @@
       />
     </div>
     <div class="text-us-content">
-      <div class="section-label">Talk to Us Now</div>
-      <h2>Have questions? Just text us.</h2>
-      <p>Our team is standing by. Send a text and we'll get back to you — usually within a few hours.</p>
+      <div class="section-label">Meet the Founder</div>
+      <h2>Questions? I'll personally text you back.</h2>
+      <p>I'm Brian, founder of Aeonix Ascend. Have a question before you sign up? Text me directly and I'll get back to you personally — usually within a few hours.</p>
       <a href="tel:+18669416892" class="phone-number">+1 (866) 941-6892</a>
       <a href="sms:+18669416892" class="sms-btn">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1023,6 +1062,14 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<div class="final-cta">
+  <div class="final-cta-inner">
+    <h2>Stop running your business alone.</h2>
+    <p>Join the waitlist today and get your first 7 days free. No credit card required.</p>
+    <a href="#waitlist" class="final-cta-btn">Claim Your Free Trial</a>
   </div>
 </div>
 
