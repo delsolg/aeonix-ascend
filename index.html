@@ -1102,8 +1102,8 @@
     btn.textContent = 'Submitting...';
     btn.disabled = true;
 
-    // Points to the Express server. Update SERVER_URL when deploying to Railway/Render.
-    const SERVER_URL = 'https://capacity-reemerge-quail.ngrok-free.dev';
+    // Points to the Express server on Railway.
+    const SERVER_URL = 'https://aeonix-ascend-production.up.railway.app';
     try {
       const res = await fetch(SERVER_URL + '/waitlist', {
         method: 'POST',
