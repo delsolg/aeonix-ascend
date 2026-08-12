@@ -33,13 +33,21 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // First-ever conversation with a new user. Goal: make them feel welcomed,
 // learn about them and their business, and land on ONE specific, achievable
-// goal for the next 1-2 weeks.
-const ONBOARDING_SYSTEM_PROMPT = `You are Aeon, an AI business coach meeting a brand new client for the first time via text message.
+// goal for the next 1-2 weeks. Skips questions we already have answers to
+// (e.g. name/business collected on the signup form).
+function buildOnboardingPrompt(knownName, knownBusiness) {
+  const known = [];
+  if (knownName)     known.push(`Their name is ${knownName}.`);
+  if (knownBusiness) known.push(`Their business: ${knownBusiness}.`);
 
-Be warm, curious, and encouraging — this is a first impression. Your job right now is to learn, one thing at a time:
-1. Their name (if you don't already know it)
-2. What their business does
+  return `You are Aeon, an AI business coach meeting a brand new client for the first time via text message.
+
+${known.length ? `Here's what you already know about them:\n${known.join('\n')}\n\n` : ''}Be warm, curious, and encouraging — this is a first impression. Your job right now is to learn, one thing at a time, whatever you don't already know:
+1. Their name (skip this if already known — don't ask again)
+2. What their business does (skip this if already known — don't ask again)
 3. Their #1 goal right now — something specific and achievable in the next 1-2 weeks
+
+If you already know their name and business, greet them by name and go straight to asking about their goal — don't waste a message re-asking what you already know.
 
 Ask ONLY ONE question per message — never stack multiple questions. Keep responses under 300 characters.
 
@@ -47,6 +55,7 @@ Once you have a clear, specific goal from them, respond with a short encouraging
 [GOAL: <the specific goal in a few words>]
 
 Do not include the [GOAL: ...] tag until you actually have a concrete goal from the user — keep asking questions until you do.`;
+}
 
 // Every conversation after onboarding. Goal-aware: knows the user's current
 // goal, checks progress on it, and only sets a new one once it's done.
@@ -182,6 +191,8 @@ async function saveUserToAirtable(firstName, phone, businessType) {
         Phone:           phone,
         'Business Type': businessType,
         SignupDate:      new Date().toISOString(),
+        Status:          'trial',
+        Onboarded:       false,
       },
     }],
   };
@@ -197,6 +208,39 @@ async function saveUserToAirtable(firstName, phone, businessType) {
   }
 
   console.log(`[Airtable] User saved: ${firstName} (${phone})`);
+}
+
+// ---------------------------------------------------------------------------
+// Onboarding opener — sent the moment someone signs up, before they've
+// texted in at all. Uses the same onboarding brain as the /sms webhook so
+// the conversation feels continuous, and skips questions we already know
+// the answer to from the signup form.
+// ---------------------------------------------------------------------------
+
+async function sendOnboardingOpener(phone, firstName, businessType) {
+  const systemPrompt = buildOnboardingPrompt(firstName, businessType);
+
+  const response = await anthropic.messages.create({
+    model:      'claude-haiku-4-5',
+    max_tokens: 300,
+    system:     systemPrompt,
+    messages: [
+      { role: 'user', content: '(New user just signed up on the website. Greet them warmly by name and ask your first onboarding question.)' },
+    ],
+  });
+
+  const rawText = response.content[0].text;
+  const { cleanText } = extractGoalTag(rawText); // strip any stray tag just in case
+
+  await sendSms(phone, cleanText);
+
+  // Log it so it's part of conversation history for future context —
+  // there's no real "inbound message" here, so we mark it as a system event.
+  logToAirtable(phone, '(new signup — onboarding opener sent)', cleanText).catch((err) =>
+    console.error(`[Airtable] Logging failed for ${phone}:`, err.message)
+  );
+
+  return cleanText;
 }
 
 // ---------------------------------------------------------------------------
@@ -384,7 +428,7 @@ async function getAeonResponse(phone, userMessage) {
 
   const isOnboarding = !user.fields.Onboarded;
   const systemPrompt = isOnboarding
-    ? ONBOARDING_SYSTEM_PROMPT
+    ? buildOnboardingPrompt(user.fields.Name, user.fields['Business Type'])
     : buildCoachingPrompt(user.fields.CurrentGoal);
 
   const history = await getConversationHistory(phone);
@@ -437,10 +481,9 @@ app.post('/waitlist', async (req, res) => {
   }
 
   try {
-    const welcome = `Hey ${firstName.trim()}! I'm Aeon, your AI business coach. I can't wait to help your business grow. What's the #1 goal you want to hit this month? Just reply here to get started.`;
-    await sendSms(normalizedPhone, welcome);
+    await sendOnboardingOpener(normalizedPhone, firstName.trim(), businessType);
   } catch (err) {
-    console.error('[Waitlist] Welcome SMS failed:', err.message);
+    console.error('[Waitlist] Onboarding opener failed:', err.message);
     // Still return success — the record was saved
   }
 
