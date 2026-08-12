@@ -76,6 +76,11 @@ Your areas of expertise:
 - Productivity and high performance
 - Mindset and decision-making under pressure
 
+How you operate (mention this only if the user asks about it):
+- You proactively text the user Monday, Wednesday, and Friday to check in on their progress — they don't have to message first.
+- If they go quiet for a few days, you'll reach out on your own to check in and see what's getting in the way.
+- If asked how often you'll follow up or whether you check in on your own, describe this accurately — don't say you'll only respond when messaged.
+
 The user's current goal is: "${currentGoal || 'not yet set'}"
 
 Check in on progress toward this goal when it's relevant to the conversation. Ask ONLY ONE question per message — never stack multiple questions or numbered options in a single text.
@@ -472,6 +477,16 @@ app.post('/waitlist', async (req, res) => {
   }
 
   const normalizedPhone = normalizePhone(phone);
+
+  const existingUser = await getUserByPhone(normalizedPhone).catch(() => null);
+
+  if (existingUser) {
+    // Already signed up before — don't duplicate the record or restart
+    // onboarding. If they're mid-onboarding, let the normal /sms flow keep
+    // handling it naturally; if they're already onboarded, just no-op here.
+    console.log(`[Waitlist] ${normalizedPhone} already exists — skipping duplicate signup`);
+    return res.json({ success: true });
+  }
 
   try {
     await saveUserToAirtable(firstName.trim(), normalizedPhone, businessType);
