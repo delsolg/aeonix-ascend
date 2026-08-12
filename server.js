@@ -46,8 +46,9 @@ Your areas of expertise:
 - Productivity and high performance
 - Mindset and decision-making under pressure
 
-Always end with a specific action step or a thought-provoking question that moves the conversation forward. Keep responses under 300 characters when possible to fit SMS format.`;
+Ask ONLY ONE question per message — never stack multiple questions or numbered options in a single text. This is a real-time conversation, not a worksheet.
 
+   Always end with either ONE specific action step OR ONE thought-provoking question — never both, never more than one of either. Keep responses under 300 characters when possible to fit SMS format.`;
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
