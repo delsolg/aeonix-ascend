@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const Anthropic = require('@anthropic-ai/sdk');
+const cron = require('node-cron');
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
@@ -30,7 +31,27 @@ const HISTORY_EXCHANGES = 5;
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const AEON_SYSTEM_PROMPT = `You are Aeon, an elite business coach and strategic advisor. You help entrepreneurs, executives, and ambitious professionals achieve breakthrough results.
+// First-ever conversation with a new user. Goal: make them feel welcomed,
+// learn about them and their business, and land on ONE specific, achievable
+// goal for the next 1-2 weeks.
+const ONBOARDING_SYSTEM_PROMPT = `You are Aeon, an AI business coach meeting a brand new client for the first time via text message.
+
+Be warm, curious, and encouraging — this is a first impression. Your job right now is to learn, one thing at a time:
+1. Their name (if you don't already know it)
+2. What their business does
+3. Their #1 goal right now — something specific and achievable in the next 1-2 weeks
+
+Ask ONLY ONE question per message — never stack multiple questions. Keep responses under 300 characters.
+
+Once you have a clear, specific goal from them, respond with a short encouraging wrap-up, and include this exact tag at the very end of your message on its own line:
+[GOAL: <the specific goal in a few words>]
+
+Do not include the [GOAL: ...] tag until you actually have a concrete goal from the user — keep asking questions until you do.`;
+
+// Every conversation after onboarding. Goal-aware: knows the user's current
+// goal, checks progress on it, and only sets a new one once it's done.
+function buildCoachingPrompt(currentGoal) {
+  return `You are Aeon, an elite business coach and strategic advisor. You help entrepreneurs, executives, and ambitious professionals achieve breakthrough results.
 
 Your coaching style:
 - Direct, actionable, and results-focused
@@ -46,9 +67,18 @@ Your areas of expertise:
 - Productivity and high performance
 - Mindset and decision-making under pressure
 
-Ask ONLY ONE question per message — never stack multiple questions or numbered options in a single text. This is a real-time conversation, not a worksheet.
+The user's current goal is: "${currentGoal || 'not yet set'}"
 
-   Always end with either ONE specific action step OR ONE thought-provoking question — never both, never more than one of either. Keep responses under 300 characters when possible to fit SMS format.`;
+Check in on progress toward this goal when it's relevant to the conversation. Ask ONLY ONE question per message — never stack multiple questions or numbered options in a single text.
+
+If the user reports they've fully completed this goal, congratulate them specifically, then propose ONE new specific, achievable goal for the next 1-2 weeks. Include this exact tag at the very end of your message on its own line:
+[GOAL: <the new goal in a few words>]
+
+If they're still working on the current goal, do not include a [GOAL: ...] tag — just coach them normally.
+
+Always end with either ONE specific action step OR ONE thought-provoking question — never both, never more than one of either. Keep responses under 300 characters when possible to fit SMS format.`;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -170,6 +200,144 @@ async function saveUserToAirtable(firstName, phone, businessType) {
 }
 
 // ---------------------------------------------------------------------------
+// Airtable — find or create a user by phone, track onboarding + goal
+// ---------------------------------------------------------------------------
+
+async function getUserByPhone(phone) {
+  const filter = encodeURIComponent(`{Phone}="${phone}"`);
+  const res = await airtableFetch(`/Users?filterByFormula=${filter}&maxRecords=1`);
+  if (!res.ok) {
+    console.warn(`[Airtable] User lookup failed (${res.status}) for ${phone}`);
+    return null;
+  }
+  const data = await res.json();
+  return data.records?.[0] || null;
+}
+
+async function createUserByPhone(phone) {
+  const payload = {
+    records: [{
+      fields: {
+        Phone:      phone,
+        Status:     'trial',
+        Onboarded:  false,
+        SignupDate: new Date().toISOString(),
+      },
+    }],
+  };
+  const res = await airtableFetch('/Users', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(`Airtable Users create error ${res.status}: ${JSON.stringify(err)}`);
+  }
+  const data = await res.json();
+  console.log(`[Airtable] New user created for ${phone}`);
+  return data.records[0];
+}
+
+// Saves a new goal and marks the user onboarded (safe to call every time —
+// flipping Onboarded to true on an already-onboarded user is a no-op).
+async function saveUserGoal(recordId, goal) {
+  await airtableFetch(`/Users/${recordId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ fields: { CurrentGoal: goal, Onboarded: true } }),
+  });
+  console.log(`[Airtable] Goal saved: "${goal}"`);
+}
+
+// Pulls a [GOAL: ...] tag out of Aeon's raw reply, if present, and returns
+// both the tag-free text (safe to text the user) and the extracted goal.
+function extractGoalTag(rawText) {
+  const match = rawText.match(/\[GOAL:\s*(.+?)\]/i);
+  const cleanText = rawText.replace(/\[GOAL:\s*.+?\]/i, '').trim();
+  return { cleanText, goal: match ? match[1].trim() : null };
+}
+
+// ---------------------------------------------------------------------------
+// Airtable — active users + last message timestamp
+// ---------------------------------------------------------------------------
+
+async function getActiveUsers() {
+  const filter = encodeURIComponent(`{Status}="active"`);
+  const res = await airtableFetch(`/Users?filterByFormula=${filter}`);
+  if (!res.ok) {
+    console.warn(`[Airtable] Failed to fetch active users (${res.status})`);
+    return [];
+  }
+  const data = await res.json();
+  return data.records || [];
+}
+
+async function getLastMessageTimestamp(phone) {
+  const filter = encodeURIComponent(`{Phone}="${phone}"`);
+  const qs = `filterByFormula=${filter}&sort[0][field]=Timestamp&sort[0][direction]=desc&maxRecords=1`;
+  const res = await airtableFetch(`/Conversations?${qs}`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  const record = data.records?.[0];
+  return record ? new Date(record.fields.Timestamp) : null;
+}
+
+async function updateLastCheckIn(recordId) {
+  await airtableFetch(`/Users/${recordId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ fields: { LastCheckIn: new Date().toISOString() } }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Proactive outreach
+// ---------------------------------------------------------------------------
+
+async function runScheduledCheckIns() {
+  const users = await getActiveUsers();
+  for (const user of users) {
+    const phone = user.fields.Phone;
+    const name = user.fields.Name || 'there';
+    try {
+      const goal = user.fields.CurrentGoal;
+      const checkIn = goal
+        ? `Hey ${name}, checking in on your goal — "${goal}". What progress have you made?`
+        : `Hey ${name}, checking in — what's one thing you moved forward on since we last talked?`;
+      await sendSms(phone, checkIn);
+      await updateLastCheckIn(user.id);
+      console.log(`[Proactive] Check-in sent to ${phone}`);
+    } catch (err) {
+      console.error(`[Proactive] Check-in failed for ${phone}:`, err.message);
+    }
+  }
+}
+
+async function runGhostDetection() {
+  const users = await getActiveUsers();
+  const now = Date.now();
+  const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+  const today = new Date().toDateString();
+
+  for (const user of users) {
+    const phone = user.fields.Phone;
+    const name = user.fields.Name || 'there';
+    const lastCheckIn = user.fields.LastCheckIn ? new Date(user.fields.LastCheckIn).toDateString() : null;
+
+    if (lastCheckIn === today) continue; // already texted today via scheduled check-in, skip
+
+    try {
+      const lastMsg = await getLastMessageTimestamp(phone);
+      if (lastMsg && (now - lastMsg.getTime()) >= THREE_DAYS_MS) {
+        const nudge = `Hey ${name}, haven't heard from you in a few days — everything okay? What's been getting in the way?`;
+        await sendSms(phone, nudge);
+        console.log(`[Proactive] Ghost re-engagement sent to ${phone}`);
+      }
+    } catch (err) {
+      console.error(`[Proactive] Ghost check failed for ${phone}:`, err.message);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Twilio — send SMS
 // ---------------------------------------------------------------------------
 
@@ -207,25 +375,44 @@ async function sendSms(to, body) {
 // ---------------------------------------------------------------------------
 
 async function getAeonResponse(phone, userMessage) {
-  const history = await getConversationHistory(phone);
+  // Find (or create) this user's Airtable record so we know whether
+  // they've been onboarded yet and what their current goal is.
+  let user = await getUserByPhone(phone);
+  if (!user) {
+    user = await createUserByPhone(phone);
+  }
 
+  const isOnboarding = !user.fields.Onboarded;
+  const systemPrompt = isOnboarding
+    ? ONBOARDING_SYSTEM_PROMPT
+    : buildCoachingPrompt(user.fields.CurrentGoal);
+
+  const history = await getConversationHistory(phone);
   const messages = [
     ...history,
     { role: 'user', content: userMessage },
   ];
 
-  console.log(`[Claude] Sending message for ${phone} with ${history.length / 2} prior exchange(s)`);
+  console.log(`[Claude] Sending message for ${phone} (${isOnboarding ? 'onboarding' : 'coaching'}) with ${history.length / 2} prior exchange(s)`);
 
   const response = await anthropic.messages.create({
     model:      'claude-haiku-4-5',
     max_tokens: 300,
-    system:     AEON_SYSTEM_PROMPT,
+    system:     systemPrompt,
     messages,
   });
 
-  const text = response.content[0].text;
-  console.log(`[Claude] Aeon response: "${text}"`);
-  return text;
+  const rawText = response.content[0].text;
+  const { cleanText, goal } = extractGoalTag(rawText);
+
+  if (goal) {
+    await saveUserGoal(user.id, goal).catch((err) =>
+      console.error(`[Airtable] Failed to save goal for ${phone}:`, err.message)
+    );
+  }
+
+  console.log(`[Claude] Aeon response: "${cleanText}"`);
+  return cleanText;
 }
 
 // ---------------------------------------------------------------------------
@@ -295,6 +482,25 @@ app.post('/sms', async (req, res) => {
 });
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'Aeonix Ascend' }));
+
+// Manual trigger for testing — hit this in a browser or with curl to fire
+// check-ins/ghost detection on demand instead of waiting for the cron time.
+// TODO: remove or protect with a secret before broad rollout.
+app.get('/test-checkin', async (_req, res) => {
+  await runScheduledCheckIns();
+  res.json({ triggered: 'scheduled check-ins' });
+});
+
+app.get('/test-ghost', async (_req, res) => {
+  await runGhostDetection();
+  res.json({ triggered: 'ghost detection' });
+});
+
+// Mon/Wed/Fri at 9am Central — scheduled check-ins
+cron.schedule('0 9 * * 1,3,5', runScheduledCheckIns, { timezone: 'America/Chicago' });
+
+// Every day at 10am Central — ghost detection (3-day silence threshold)
+cron.schedule('0 10 * * *', runGhostDetection, { timezone: 'America/Chicago' });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
